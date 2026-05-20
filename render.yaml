@@ -1,18 +1,34 @@
 services:
   - type: web
     name: identsoft
-    env: php
+    env: docker
     plan: free
-    buildCommand: composer install --no-dev --optimize-autoloader && php artisan config:clear && php artisan cache:clear
-    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     envVars:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: false
+      - key: APP_URL
+        sync: false
       - key: LOG_CHANNEL
         value: stack
       - key: CACHE_DRIVER
         value: file
       - key: SESSION_DRIVER
         value: file
+      - key: APP_KEY
+        sync: false
+      - key: DB_CONNECTION
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
