@@ -1,5 +1,7 @@
 FROM php:8.1-apache
 
+# Cache bust - force rebuild
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     zip unzip git curl libzip-dev libpng-dev libonig-dev libxml2-dev \
@@ -16,7 +18,7 @@ WORKDIR /var/www/html
 
 # Copy application files
 COPY . .
-
+ --ignore-platform-reqs
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
