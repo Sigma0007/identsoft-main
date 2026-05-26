@@ -26,11 +26,10 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-pl
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
-# Clear and cache config
+# Clear any existing cache
 RUN php artisan config:clear \
     && php artisan cache:clear \
-    && php artisan view:clear \
-    && php artisan config:cache
+    && php artisan view:clear
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
