@@ -156,8 +156,6 @@ class InstallController extends Controller
         $env = implode("\n", $env);
         file_put_contents(base_path('.env'), $env);
         Artisan::call('config:clear');
-        Artisan::call('key:generate');
-        Artisan::call('config:cache');
         return true;
     }
 }

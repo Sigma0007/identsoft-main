@@ -26,6 +26,18 @@ Route::get('/migrate', function() {
     }
 });
 
+Route::get('/clear-cache', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        return "All caches cleared successfully! <a href='/'>Go to Home</a>";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
 Route::get('/lang',[
     'uses' => 'App\Http\Controllers\HomeController@lang',
     'as' => 'lang.index'
