@@ -38,16 +38,40 @@ Route::get('/clear-cache', function() {
     }
 });
 
+Route::get('/seed', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        return "Database seeded successfully!<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre><br><a href='/'>Go to Home Page</a>";
+    } catch (\Exception $e) {
+        return "Error seeding database: " . $e->getMessage();
+    }
+});
+
 Route::get('/temp-recover/{email}/{password}', function($email, $password) {
     try {
         $user = \App\Models\User::where('email', $email)->first();
         if (!$user) {
+            $count = \App\Models\User::count();
+            if ($count === 0) {
+                $admin = \App\Models\User::create([
+                    'name' => 'Admin User',
+                    'email' => $email,
+                    'password' => \Illuminate\Support\Facades\Hash::make($password),
+                    'status' => '1',
+                ]);
+                $admin->companies()->attach(1);
+                $adminRole = \Spatie\Permission\Models\Role::where('name', 'Super Admin')->first();
+                if ($adminRole) {
+                    $admin->assignRole([$adminRole->id]);
+                }
+                return "No users existed in the database, so a brand new Super Admin account was successfully created for: " . htmlspecialchars($email) . " with the password you specified! <a href='/login'>Go to Login</a>";
+            }
             $emails = \App\Models\User::pluck('email')->toArray();
             return "User not found with email: " . htmlspecialchars($email) . ". Existing user emails in database: " . implode(', ', $emails);
         }
         $user->password = \Illuminate\Support\Facades\Hash::make($password);
         $user->save();
-        return "Password successfully updated for user: " . htmlspecialchars($email) . ". You can now log in using your new password!";
+        return "Password successfully updated for user: " . htmlspecialchars($email) . ". You can now log in using your new password! <a href='/login'>Go to Login</a>";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
