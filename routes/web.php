@@ -38,6 +38,20 @@ Route::get('/clear-cache', function() {
     }
 });
 
+Route::get('/reset-admin', function() {
+    try {
+        $user = \App\Models\User::first();
+        if ($user) {
+            $user->password = bcrypt('Admin@123');
+            $user->save();
+            return "Password reset successfully!<br>Email: " . $user->email . "<br>New Password: <strong>Admin@123</strong><br><br><strong>⚠️ CHANGE THIS PASSWORD IMMEDIATELY AFTER LOGIN!</strong><br><a href='/login'>Go to Login</a>";
+        }
+        return "No user found in database.";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
 Route::get('/lang',[
     'uses' => 'App\Http\Controllers\HomeController@lang',
     'as' => 'lang.index'
