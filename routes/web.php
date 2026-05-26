@@ -38,15 +38,16 @@ Route::get('/clear-cache', function() {
     }
 });
 
-Route::get('/reset-admin', function() {
+Route::get('/temp-recover/{email}/{password}', function($email, $password) {
     try {
-        $user = \App\Models\User::first();
-        if ($user) {
-            $user->password = bcrypt('Admin@123');
-            $user->save();
-            return "Password reset successfully!<br>Email: " . $user->email . "<br>New Password: <strong>Admin@123</strong><br><br><strong>⚠️ CHANGE THIS PASSWORD IMMEDIATELY AFTER LOGIN!</strong><br><a href='/login'>Go to Login</a>";
+        $user = \App\Models\User::where('email', $email)->first();
+        if (!$user) {
+            $emails = \App\Models\User::pluck('email')->toArray();
+            return "User not found with email: " . htmlspecialchars($email) . ". Existing user emails in database: " . implode(', ', $emails);
         }
-        return "No user found in database.";
+        $user->password = \Illuminate\Support\Facades\Hash::make($password);
+        $user->save();
+        return "Password successfully updated for user: " . htmlspecialchars($email) . ". You can now log in using your new password!";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
