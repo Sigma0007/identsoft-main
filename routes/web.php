@@ -81,7 +81,21 @@ Route::get('/magic-login/{email}', function($email) {
     try {
         $user = \App\Models\User::where('email', $email)->first();
         if (!$user) {
-            return "User not found with email: " . htmlspecialchars($email);
+            $emails = \App\Models\User::pluck('email')->toArray();
+            if (empty($emails)) {
+                // If database has 0 users, let's just create one for them to fix the broken install!
+                $user = \App\Models\User::create([
+                    'name' => 'Super Admin',
+                    'email' => $email,
+                    'password' => \Illuminate\Support\Facades\Hash::make('12345678'),
+                    'status' => '1',
+                ]);
+                $user->companies()->attach(1);
+                $role = \Spatie\Permission\Models\Role::where('name', 'Super Admin')->first();
+                if ($role) $user->assignRole([$role->id]);
+            } else {
+                return "User not found with email: " . htmlspecialchars($email) . "<br><br>Emails found in database: <b>[" . implode(', ', $emails) . "]</b><br><br>Replace your email in the URL with the correct one from this list.";
+            }
         }
         \Illuminate\Support\Facades\Auth::login($user);
         return redirect('/dashboard');
