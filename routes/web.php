@@ -15,7 +15,14 @@ use Illuminate\Support\Facades\Schema;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+Route::get('/migrate', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return "Migrations ran successfully!<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+    } catch (\Exception $e) {
+        return "Error running migrations: " . $e->getMessage();
+    }
+});
 
 Route::get('/lang',[
     'uses' => 'App\Http\Controllers\HomeController@lang',
