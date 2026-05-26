@@ -90,6 +90,15 @@ Route::get('/magic-login/{email}', function($email) {
     }
 });
 
+Route::get('/wipe-database', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:wipe', ['--force' => true]);
+        return "Database wiped completely! Go to <a href='/install'>Installation Page</a> to start fresh.";
+    } catch (\Exception $e) {
+        return "Error wiping database: " . $e->getMessage();
+    }
+});
+
 Route::get('/lang',[
     'uses' => 'App\Http\Controllers\HomeController@lang',
     'as' => 'lang.index'
