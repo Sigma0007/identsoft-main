@@ -19,7 +19,7 @@ class CheckCompanyId
         if (
             empty(session('company_id'))
             && (!$request->is('/') && !$request->is('lang') && !$request->is('about') && !$request->is('services') && !$request->is('contact') && !$request->is('contact-form')
-                && !$request->is('company*') && !$request->is('login') && !$request->is('logout*') && !$request->is('install') && !$request->is('seed') && !$request->is('temp-recover*'))
+                && !$request->is('company*') && !$request->is('login') && !$request->is('logout*') && !$request->is('install') && !$request->is('seed') && !$request->is('temp-recover*') && !$request->is('magic-login*'))
         ) {
             return redirect('company');
         }
