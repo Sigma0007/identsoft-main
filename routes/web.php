@@ -104,6 +104,15 @@ Route::get('/magic-login/{email}', function($email) {
     }
 });
 
+Route::get('/log', function() {
+    $path = storage_path('logs/laravel.log');
+    if (!file_exists($path)) return "No log file found.";
+    // Get last 50 lines
+    $lines = file($path);
+    $last_lines = array_slice($lines, -100);
+    return "<pre>" . implode("", $last_lines) . "</pre>";
+});
+
 Route::get('/wipe-database', function() {
     try {
         \Illuminate\Support\Facades\Artisan::call('db:wipe', ['--force' => true]);
